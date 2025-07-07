@@ -1,6 +1,8 @@
 # Doctor Appointment Booking System
 
-This project is a comprehensive Doctor Appointment Booking System with three dashboards: Admin, Doctor, and User. The system allows users to book and cancel appointments, make online payments using Razorpay, and update their profiles. Doctors and Admins can mark appointments as complete or cancel them.
+This is a full-featured Doctor Appointment Booking System that includes three dashboards: User, Doctor, and Admin. Users can book and cancel appointments, make payments online using Razorpay, and update their profiles. Doctors and Admins have tools to manage appointments effectively.
+
+🔗 Live Site (User Dashboard): https://presciptobooking-1.onrender.com
 
 ## Features
 
