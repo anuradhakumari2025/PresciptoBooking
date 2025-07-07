@@ -6,12 +6,15 @@ export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
   const currencySymbol = "$";
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+console.log("🚀 Backend URL:", backendUrl);
+  
   const [doctors, setDoctors] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('token')?localStorage.getItem('token'):false);
   const [userData, setUserData] = useState(false);
   const getDoctorsData = async () => {
     try {
+      console.log("🚀 Requesting:", backendUrl + "/api/doctor/list");
       const { data } = await axios.post(backendUrl + "/api/doctor/list");
       if (data.success) {
         setDoctors(data.doctors);
