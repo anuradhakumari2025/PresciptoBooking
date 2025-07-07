@@ -16,7 +16,7 @@ connectCloudinary();
 app.use(
   cors({
     origin:
-      "https://presciptobooking-v1.vercel.app/" || "http://localhost:5173/",
+      "https://presciptobooking-1.onrender.com/" || "http://localhost:5173/",
   })
 );
 app.use(express.json());
