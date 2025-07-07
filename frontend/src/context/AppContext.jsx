@@ -20,7 +20,7 @@ console.log("🚀 Backend URL:", backendUrl);
         setDoctors(data.doctors);
         // console.log(data.doctors)
       } else {
-        toast.error(error.message);
+        toast.error(data.message || "Failed to fetch doctor data");
       }
     } catch (error) {
       toast.error(error.message);
