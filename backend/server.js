@@ -15,8 +15,8 @@ connectDB();
 connectCloudinary();
 app.use(
   cors({
-    origin:
-      "https://presciptobooking-1.onrender.com/" || "http://localhost:5173/",
+    origin: "https://presciptobooking-1.onrender.com/",
+    credentials: true,
   })
 );
 app.use(express.json());
