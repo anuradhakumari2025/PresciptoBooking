@@ -10,13 +10,18 @@ const Razorpay = require("razorpay");
 module.exports.userRegister = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    // 1. Basic field presence
     if (!name || !email || !password) {
       res.json({ success: false, message: "Missing Credentials" });
     }
+
+    // 2. Email format
     if (!validator.isEmail(email)) {
       res.json({ success: false, message: "Enter a valid email" });
     }
-    //vlaidating password
+
+    // 3. Password strength
     if (password.length < 6) {
       return res.json({
         success: false,
@@ -24,7 +29,8 @@ module.exports.userRegister = async (req, res) => {
           "Please enter strong password and length must be atleast 6 character",
       });
     }
-    //hash password
+
+    // 4. Hash & save
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -35,11 +41,23 @@ module.exports.userRegister = async (req, res) => {
     };
     const newUser = new userModel(userData);
     const user = await newUser.save();
+
+    // 5. Sign JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     res.json({ success: true, token });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Register error:", error);
+    // Duplicate email
+    if (error.code === 11000 && error.keyValue?.email) {
+      return res.status(400).json({
+        success: false,
+        message: "A user with this email already exists",
+      });
+    }
+
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error. Please try again." });
   }
 };
 
@@ -58,7 +76,7 @@ module.exports.userLogin = async (req, res) => {
       res.json({ success: true, token });
     }
   } catch (error) {
-    console.log(error);
+    console.log("Login error",error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -69,7 +87,7 @@ module.exports.getProfile = async (req, res) => {
     const userData = await userModel.findById(userId).select("-password");
     res.json({ success: true, userData });
   } catch (error) {
-    console.log(error);
+    console.log("Get profile error",error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -107,10 +125,6 @@ module.exports.updateProfile = async (req, res) => {
 module.exports.bookAppointment = async (req, res) => {
   try {
     const { userId, docId, slotTime, slotDate } = req.body;
-    // console.log(docId)
-    // console.log(userId)
-    // console.log(slotTime)
-    // console.log(slotDate)
     const doctorData = await doctorModel.findById(docId).select("-password");
     // console.log(doctorData)
     if (!doctorData) {
@@ -229,11 +243,16 @@ module.exports.verifyRazorpay = async (req, res) => {
     const { razorpay_order_id } = req.body;
     const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
     // console.log(orderInfo);
-    if(orderInfo.status === 'paid'){
-      await appointmentModel.findByIdAndUpdate(orderInfo.receipt,{payment:true})
-       return res.json({success:true,message:"Payment Successfull"})
-    }else{
-      return res.json({success:false,message:"Something went wrong,Payment failed"})
+    if (orderInfo.status === "paid") {
+      await appointmentModel.findByIdAndUpdate(orderInfo.receipt, {
+        payment: true,
+      });
+      return res.json({ success: true, message: "Payment Successfull" });
+    } else {
+      return res.json({
+        success: false,
+        message: "Something went wrong,Payment failed",
+      });
     }
   } catch (error) {
     console.log(error);
